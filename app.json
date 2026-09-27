@@ -1,11 +1,8 @@
 {
   "expo": {
-    "name": "訓練課程計畫v3.1.4",
+    "name": "訓練課程計畫",
     "slug": "TrainingSchedule",
     "version": "3.1.4",
-    // git add .
-    //   git commit -m "Test Vercel automatic deployment"
-    //   git push
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -22,8 +19,11 @@
       "package": "com.ulysses0710.TrainingSchedule",
       "versionCode": 11
     },
-    "ios": {},
+    "ios": {
+      "supportsTablet": true
+    },
     "web": {
+      "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
