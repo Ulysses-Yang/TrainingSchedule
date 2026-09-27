@@ -13,18 +13,24 @@ export default function Root({ children }) {
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#24b9cc" />
-        <meta name="background-color" content="#ffffff" />
-        {/* 連結 PWA Manifest */}
-        /manifest.json
-        {/* iPhone 與 iPad 主畫面圖示 */}
-        /apple-touch-icon.png
-        {/* 允許從 iOS 主畫面以獨立 App 模式開啟 */}
+        <link rel="manifest" href="/manifest.json" />
+
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="/icon-192.png"
+        />
+        {/* 允許從 iPhone 主畫面以獨立模式開啟 */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        {/* 其他行動瀏覽器的獨立 App 模式 */}
         <meta name="mobile-web-app-capable" content="yes" />
-        {/* iPhone 狀態列顯示方式 */}
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        {/* iPhone 主畫面 App 名稱 */}
         <meta name="apple-mobile-web-app-title" content="訓練課程計畫" />
         <title>訓練課程計畫</title>
         <ScrollViewStyleReset />
@@ -35,14 +41,11 @@ export default function Root({ children }) {
               body,
               #root {
                 width: 100%;
+                height: 100%;
                 min-height: 100%;
                 margin: 0;
                 padding: 0;
                 background-color: #ffffff;
-              }
-
-              html {
-                height: 100%;
               }
 
               body {
@@ -50,22 +53,11 @@ export default function Root({ children }) {
                 min-height: 100dvh;
                 overscroll-behavior-y: none;
                 -webkit-tap-highlight-color: transparent;
-                -webkit-touch-callout: none;
               }
 
               #root {
                 min-height: 100vh;
                 min-height: 100dvh;
-              }
-
-              @supports (padding: env(safe-area-inset-top)) {
-                body {
-                  min-height: calc(
-                    100vh +
-                    env(safe-area-inset-top) +
-                    env(safe-area-inset-bottom)
-                  );
-                }
               }
             `,
           }}
