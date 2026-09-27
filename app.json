@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "訓練課程計畫v3.1.4",
+    "slug": "TrainingSchedule",
+    "version": "3.1.4", //eas update --channel production --message "v3.1.5"
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/images/TrainingSchedulePlanIcon_Small.png",
+    "scheme": "trainingschedule",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "icon": "./assets/images/TrainingSchedulePlanIcon_Small.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/TrainingSchedulePlanIcon_Small.png",
+        "backgroundColor": "#24b9cc"
+      },
+      "package": "com.ulysses0710.TrainingSchedule",
+      "versionCode": 11
+    },
+    "ios": {},
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/TrainingSchedulePlanIcon_Small.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#24b9cc"
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font",
+      "expo-image",
+      "expo-sharing",
+      "expo-status-bar",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fee18db7-d22f-4adc-8276-00b7d8316586"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fee18db7-d22f-4adc-8276-00b7d8316586"
+    },
+    "owner": "huiya123"
+  }
+}
