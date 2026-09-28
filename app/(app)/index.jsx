@@ -308,7 +308,7 @@ export default function CalendarScreen() {
           {displayRole ? ` ${displayRole}` : ""}
         </Text>
       </View>
-      <Text style={styles.subtitle}>選擇日期製作課表 哈囉</Text>
+      <Text style={styles.subtitle}>選擇日期製作課表</Text>
 
       {/* 創建今日課表按鈕 */}
       <View style={styles.todaySection}>
