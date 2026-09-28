@@ -10,6 +10,7 @@ import {
   Button,
   FlatList,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -225,20 +226,36 @@ export default function SchedulesListScreen() {
 
   // ✨ 步驟 3: 新增刪除課表的函式 ✨
   const handleDeleteSchedule = (scheduleId) => {
-    Alert.alert("確認刪除", "您確定要刪除這個課表嗎？此操作無法復原。", [
+    const deleteSchedule = async () => {
+      try {
+        await deleteDoc(doc(db, "schedules", scheduleId));
+      } catch (error) {
+        console.error("刪除課表失敗：", error);
+
+        if (Platform.OS === "web") {
+          window.alert("刪除課表失敗，請檢查網路連線或 Firestore 權限。");
+        } else {
+          Alert.alert(
+            "錯誤",
+            "刪除課表失敗，請檢查網路連線或 Firestore 權限。",
+          );
+        }
+      }
+    };
+
+    if (Platform.OS === "web") {
+      if (window.confirm("確定要刪除這份課表嗎？此操作無法復原。")) {
+        void deleteSchedule();
+      }
+      return;
+    }
+
+    Alert.alert("確認刪除", "確定要刪除這份課表嗎？此操作無法復原。", [
       { text: "取消", style: "cancel" },
       {
         text: "刪除",
         style: "destructive",
-        onPress: async () => {
-          try {
-            const scheduleDocRef = doc(db, "schedules", scheduleId);
-            await deleteDoc(scheduleDocRef);
-          } catch (error) {
-            console.error("從 Firestore 刪除課表失敗:", error);
-            Alert.alert("錯誤", "刪除失敗。");
-          }
-        },
+        onPress: deleteSchedule,
       },
     ]);
   };
