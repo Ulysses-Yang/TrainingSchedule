@@ -529,20 +529,38 @@ export default function ScheduleScreen() {
       });
 
       if (Platform.OS === "web") {
-        const printWindow = window.open("", "_blank");
+        const printFrame = document.createElement("iframe");
 
-        if (!printWindow) {
-          throw new Error("列印視窗被瀏覽器封鎖，請允許此網站開啟彈出視窗。");
+        printFrame.style.position = "fixed";
+        printFrame.style.width = "0";
+        printFrame.style.height = "0";
+        printFrame.style.border = "0";
+        printFrame.style.right = "0";
+        printFrame.style.bottom = "0";
+
+        document.body.appendChild(printFrame);
+
+        const frameWindow = printFrame.contentWindow;
+        const frameDocument = frameWindow?.document;
+
+        if (!frameWindow || !frameDocument) {
+          document.body.removeChild(printFrame);
+          throw new Error("無法建立列印內容。");
         }
 
-        printWindow.document.open();
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.focus();
+        frameDocument.open();
+        frameDocument.write(html);
+        frameDocument.close();
 
-        // 等新視窗完成排版後再開啟列印視窗
+        // 等待 HTML 載入，再從隱藏 iframe 開啟列印視窗。
         setTimeout(() => {
-          printWindow.print();
+          frameWindow.focus();
+          frameWindow.print();
+
+          // 列印對話框關閉後移除 iframe。
+          setTimeout(() => {
+            printFrame.remove();
+          }, 1000);
         }, 300);
 
         return;
