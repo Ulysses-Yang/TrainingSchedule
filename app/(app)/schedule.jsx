@@ -548,17 +548,7 @@ export default function ScheduleScreen() {
         return;
       }
 
-      const { uri: tmpUri } = await Print.printToFileAsync({ html });
-      const filename = `${sanitizeFilename(scheduleName || "課表")}_${dayjs(scheduleDate || new Date()).format("YYYYMMDD")}.pdf`;
-      const destUri = `${FileSystem.documentDirectory}${filename}`;
-      await FileSystem.moveAsync({ from: tmpUri, to: destUri });
-
-      // 直接開分享/下載
-      await Sharing.shareAsync(destUri, {
-        mimeType: "application/pdf",
-        dialogTitle: "分享或儲存 PDF",
-        UTI: "com.adobe.pdf",
-      });
+      await Print.printAsync({ html });
     } catch (e) {
       console.error("PDF 匯出失敗", e);
       Alert.alert("錯誤", "匯出 PDF 失敗，請稍後再試。");
