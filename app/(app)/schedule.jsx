@@ -529,40 +529,46 @@ export default function ScheduleScreen() {
       });
 
       if (Platform.OS === "web") {
-        const printFrame = document.createElement("iframe");
+        const filename = `${sanitizeFilename(
+          scheduleName || "課表",
+        )}_${dayjs(scheduleDate || new Date()).format("YYYYMMDD")}.pdf`;
 
-        printFrame.style.position = "fixed";
-        printFrame.style.width = "0";
-        printFrame.style.height = "0";
-        printFrame.style.border = "0";
-        printFrame.style.right = "0";
-        printFrame.style.bottom = "0";
+        // 瀏覽器支援分享檔案時，產生 PDF 後開啟分享選單。
+        if (
+          typeof navigator !== "undefined" &&
+          typeof navigator.share === "function" &&
+          typeof navigator.canShare === "function"
+        ) {
+          const { uri } = await Print.printToFileAsync({ html });
 
-        document.body.appendChild(printFrame);
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          const pdfFile = new File([blob], filename, {
+            type: "application/pdf",
+          });
 
-        const frameWindow = printFrame.contentWindow;
-        const frameDocument = frameWindow?.document;
-
-        if (!frameWindow || !frameDocument) {
-          document.body.removeChild(printFrame);
-          throw new Error("無法建立列印內容。");
+          if (navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+              files: [pdfFile],
+              title: filename,
+            });
+            return;
+          }
         }
 
-        frameDocument.open();
-        frameDocument.write(html);
-        frameDocument.close();
+        // 瀏覽器不支援分享 PDF 時，下載 PDF。
+        const { uri } = await Print.printToFileAsync({ html });
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement("a");
 
-        // 等待 HTML 載入，再從隱藏 iframe 開啟列印視窗。
-        setTimeout(() => {
-          frameWindow.focus();
-          frameWindow.print();
-
-          // 列印對話框關閉後移除 iframe。
-          setTimeout(() => {
-            printFrame.remove();
-          }, 1000);
-        }, 300);
-
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
         return;
       }
 
