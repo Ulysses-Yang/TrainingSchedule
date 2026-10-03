@@ -529,23 +529,8 @@ export default function ScheduleScreen() {
       });
 
       if (Platform.OS === "web") {
-        const filename = `${sanitizeFilename(
-          scheduleName || "課表",
-        )}_${dayjs(scheduleDate || new Date()).format("YYYYMMDD")}.pdf`;
-
-        // 網頁版直接下載 PDF，不開啟瀏覽器分享選單。
-        const { uri } = await Print.printToFileAsync({ html });
-        const response = await fetch(uri);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-
-        link.href = blobUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(blobUrl);
+        // 網頁版開啟瀏覽器列印視窗，可直接列印或另存為 PDF。
+        await Print.printAsync({ html });
         return;
       }
 
