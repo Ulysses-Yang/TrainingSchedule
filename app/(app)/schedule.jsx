@@ -529,8 +529,45 @@ export default function ScheduleScreen() {
       });
 
       if (Platform.OS === "web") {
-        // 網頁版開啟瀏覽器列印視窗，可直接列印或另存為 PDF。
-        await Print.printAsync({ html });
+        // Keep printing inside the current PWA window. Opening a new window can
+        // leave standalone apps or make it difficult to return to the schedule.
+        const printFrame = document.createElement("iframe");
+        printFrame.title = "課表列印內容";
+        Object.assign(printFrame.style, {
+          position: "fixed",
+          left: "0",
+          bottom: "0",
+          width: "1px",
+          height: "1px",
+          border: "0",
+          opacity: "0",
+          pointerEvents: "none",
+        });
+
+        let cleanupTimer;
+        const cleanup = () => {
+          if (cleanupTimer) clearTimeout(cleanupTimer);
+          printFrame.remove();
+        };
+
+        printFrame.onload = () => {
+          const printWindow = printFrame.contentWindow;
+          if (!printWindow) {
+            cleanup();
+            Alert.alert("列印失敗", "無法載入課表列印內容，請稍後再試。");
+            return;
+          }
+
+          printWindow.addEventListener("afterprint", cleanup, { once: true });
+          printWindow.focus();
+          printWindow.print();
+          // Some mobile browsers do not fire afterprint; clean up when the user
+          // returns to the app if that event is missing.
+          cleanupTimer = setTimeout(cleanup, 60_000);
+        };
+
+        printFrame.srcdoc = html;
+        document.body.appendChild(printFrame);
         return;
       }
 
