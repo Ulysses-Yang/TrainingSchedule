@@ -533,30 +533,7 @@ export default function ScheduleScreen() {
           scheduleName || "課表",
         )}_${dayjs(scheduleDate || new Date()).format("YYYYMMDD")}.pdf`;
 
-        // 瀏覽器支援分享檔案時，產生 PDF 後開啟分享選單。
-        if (
-          typeof navigator !== "undefined" &&
-          typeof navigator.share === "function" &&
-          typeof navigator.canShare === "function"
-        ) {
-          const { uri } = await Print.printToFileAsync({ html });
-
-          const response = await fetch(uri);
-          const blob = await response.blob();
-          const pdfFile = new File([blob], filename, {
-            type: "application/pdf",
-          });
-
-          if (navigator.canShare({ files: [pdfFile] })) {
-            await navigator.share({
-              files: [pdfFile],
-              title: filename,
-            });
-            return;
-          }
-        }
-
-        // 瀏覽器不支援分享 PDF 時，下載 PDF。
+        // 網頁版直接下載 PDF，不開啟瀏覽器分享選單。
         const { uri } = await Print.printToFileAsync({ html });
         const response = await fetch(uri);
         const blob = await response.blob();
