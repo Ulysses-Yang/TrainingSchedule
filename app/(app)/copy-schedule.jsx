@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Button,
+  Modal,
   Platform,
   Pressable,
   SafeAreaView,
@@ -180,6 +181,7 @@ export default function CopyScheduleScreen() {
   const [copiedName, setCopiedName] = useState(
     scheduleNameToCopy || "未命名課表",
   );
+  const [copySuccessDate, setCopySuccessDate] = useState(null);
   useEffect(() => {
     let canceled = false;
     const bootstrap = async () => {
@@ -266,26 +268,20 @@ export default function CopyScheduleScreen() {
         createdAt: serverTimestamp(),
       });
 
-      Alert.alert(
-        "成功",
-        `已將課表複製到 ${destinationDate.format("YYYY年M月D日")}`,
-        [
-          { text: "回到上一頁", onPress: () => router.back() },
-          {
-            text: "前往該日期",
-            onPress: () =>
-              router.replace({
-                pathname: "/schedules-list",
-                params: { date: destDateStr },
-              }),
-          },
-        ],
-      );
+      setCopySuccessDate(destDateStr);
     } catch (error) {
       console.error("複製課表失敗", error);
       Alert.alert("錯誤", "複製課表時發生問題");
     }
   }, [items, tempDate, router, scheduleNameToCopy, user?.uid, copiedName]);
+
+  const handleViewCopiedDate = useCallback(() => {
+    if (!copySuccessDate) return;
+    router.replace({
+      pathname: "/schedules-list",
+      params: { date: copySuccessDate },
+    });
+  }, [copySuccessDate, router]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -376,6 +372,47 @@ export default function CopyScheduleScreen() {
           </View>
         </View>
       </View>
+      <Modal
+        transparent
+        visible={!!copySuccessDate}
+        animationType="fade"
+        onRequestClose={() => router.back()}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 24,
+            backgroundColor: "rgba(0,0,0,0.4)",
+          }}
+        >
+          <View
+            style={{
+              width: "100%",
+              maxWidth: 360,
+              padding: 20,
+              borderRadius: 12,
+              backgroundColor: "#fff",
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}>
+              複製成功
+            </Text>
+            <Text style={{ color: "#555", marginBottom: 20 }}>
+              已將課表複製到 {dayjs(copySuccessDate).format("YYYY年M月D日")}。
+            </Text>
+            <View style={styles.buttonRow}>
+              <View style={styles.buttonContainer}>
+                <Button title="留在此頁" onPress={() => router.back()} color="#888" />
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button title="查看該日期" onPress={handleViewCopiedDate} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
